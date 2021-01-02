@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Zoomer</title>
+  <style>
+    main{
+      width: 1000px;
+      height: 600px;
+      margin: 100px auto;
+      display: flex;
+      justify-content: space-around;
+    }
+    section {
+      width: 300px;
+      height: 200px;
+      align-self: center;
+      position: relative;
+    }
+    img {
+      width: 100%;
+    }
+    div {
+      width: 600px;
+      height: 500px;
+      align-self: hidden;
+      border: 1px solid #e5e5e5;
+    }
+    span{
+      position: absolute;
+      width: 95px;
+      height: 75px;
+      visibility: hidden;
+      background: #ffffff40;
+      border: 1px solid #d4d4d4;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <img src="img.jpg" alt="">
+      <span></span>
+    </section>
+    <div></div>
+  </main>
+</body>
+</html>
+<script>
+  let image = document.querySelector('img')
+  let div = document.querySelector('div')
+  let span = document.querySelector('span')
+  let cx = div.offsetWidth / span.offsetWidth;
+  let cy = div.offsetHeight / span.offsetHeight;
+
+
+  function imageZoomer(){
+    span.addEventListener("mousemove", movespan)
+    image.addEventListener("mousemove", movespan)
+
+    span.addEventListener("mouseleave", leave)
+    image.addEventListener("mouseleave", leave)
+
+    function movespan(e){
+      span.style.visibility = "visible";
+      div.style.visibility = "visible";
+
+      let pos, x, y;
+      e.preventDefault();
+      pos = getCursorPosition(e);
+      x = pos.x - (span.offsetWidth /2);
+      y = pos.y - (span.offsetHeight /2);
+
+      if (x > image.width - span.offsetWidth) {
+        x = image.width - span.offsetWidth;
+      }
+      if (x<0){
+        x=0;
+      }
+      if (y > image.height - span.offsetHeight) {
+        y = image.height - span.offsetHeight;
+      }
+      if (y<0){
+        y=0;
+      }
+
+      span.style.left = x + "px";
+      span.style.top = y + "px";
+      div.style.backgroundPosition = "-" + (x*cx) + "px -" + (y*cy) + "px";
+    };
+    function getCursorPosition (e){
+      div.style.backgroundImage = "url('" + image.src + "')"
+      let a, x=0, y=0;
+      e = e || window.event;
+      a = image.getBoundingClientRect();
+      x = e.pageX - a.left;
+      y = e.pageY - a.top;
+      x = x - window.pageXOffset;
+      y = y - window.pageYOffset;
+      return {x:x, y:y};
+    }
+
+    function leave(){
+      span.style.visibility = "hidden";
+      div.style.visibility = "hidden";
+    }
+  }
+  imageZoomer();
+</script>
